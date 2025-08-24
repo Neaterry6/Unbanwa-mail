@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Ban Appeal to Gmail</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom gradient background */
+        body {
+            background: linear-gradient(135deg, #4b5e8e 0%, #1e1b4b 100%);
+        }
+        /* Button animation */
+        .btn-animate {
+            transition: transform 0.2s ease-in-out, background-color 0.3s;
+        }
+        .btn-animate:hover {
+            transform: scale(1.05);
+        }
+        /* Card shadow */
+        .card-shadow {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+        /* Input focus glow */
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-10 rounded-2xl card-shadow w-full max-w-md">
+        <h1 class="text-3xl font-extrabold text-center text-indigo-900 mb-8">WhatsApp Ban Appeal</h1>
+        <form id="appealForm" class="space-y-6" onsubmit="generateAppeals(event)">
+            <div>
+                <label for="phoneNumber" class="block text-sm font-medium text-gray-800">WhatsApp Number (with Country Code)</label>
+                <input 
+                    type="tel" 
+                    id="phoneNumber" 
+                    name="phoneNumber" 
+                    placeholder="+1234567890" 
+                    required 
+                    pattern="^\+\d{10,15}$" 
+                    class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 sm:text-sm"
+                >
+                <p class="text-xs text-gray-500 mt-1">Enter your phone number with country code (e.g., +1234567890).</p>
+            </div>
+            <div>
+                <label for="batchNumber" class="block text-sm font-medium text-gray-800">Batch Number (1-200)</label>
+                <input 
+                    type="number" 
+                    id="batchNumber" 
+                    min="1" 
+                    max="200" 
+                    value="1" 
+                    required 
+                    class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 sm:text-sm"
+                >
+                <p class="text-xs text-gray-500 mt-1">Select a batch of 5 messages to send (out of 1000).</p>
+            </div>
+            <div>
+                <button 
+                    type="submit" 
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 btn-animate"
+                >
+                    Generate 1000 Appeals
+                </button>
+            </div>
+        </form>
+        <p id="formMessage" class="mt-4 text-center text-sm text-gray-600 hidden"></p>
+        <div id="continueSection" class="mt-6 hidden space-y-4">
+            <p class="text-sm text-gray-600 text-center">Click below to open Gmail with your selected batch of appeal messages.</p>
+            <button 
+                id="continueButton" 
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 btn-animate"
+                onclick="openGmail()"
+            >
+                Continue to Gmail
+            </button>
+            <div id="progressBar" class="hidden w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progressFill" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let generatedMessages = [];
+        let selectedBatch = 1;
+
+        function generateAppeals(event) {
+            event.preventDefault();
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const batchNumber = parseInt(document.getElementById('batchNumber').value);
+            const formMessage = document.getElementById('formMessage');
+            const continueSection = document.getElementById('continueSection');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+
+            // Validate inputs
+            if (!phoneNumber.match(/^\+\d{10,15}$/)) {
+                formMessage.textContent = 'Please enter a valid phone number with country code.';
+                formMessage.classList.remove('hidden', 'text-green-600');
+                formMessage.classList.add('text-red-600');
+                return;
+            }
+            if (batchNumber < 1 || batchNumber > 200) {
+                formMessage.textContent = 'Please enter a valid batch number (1-200).';
+                formMessage.classList.remove('hidden', 'text-green-600');
+                formMessage.classList.add('text-red-600');
+                return;
+            }
+
+            selectedBatch = batchNumber;
+
+            // Show progress bar
+            progressBar.classList.remove('hidden');
+            progressFill.style.width = '0%';
+
+            // Expanded arrays for message variety
+            const greetings = [
+                'Dear WhatsApp Support Team,',
+                'Hello WhatsApp Support,',
+                'To the WhatsApp Review Team,',
+                'Dear WhatsApp Team,',
+                'Respected WhatsApp Support,',
+                'Dear Support Staff,',
+                'Hello WhatsApp Appeals Team,',
+                'To Whom It May Concern at WhatsApp,',
+                'Dear WhatsApp Customer Support,',
+                'Greetings WhatsApp Team,',
+                'Dear WhatsApp Account Review Team,',
+                'Hello WhatsApp Ban Appeal Team,'
+            ];
+            const reasons = [
+                'I believe my account was banned by mistake.',
+                'My account may have been flagged in error.',
+                'I suspect my account was banned due to a misunderstanding.',
+                'It appears my account was suspended unintentionally.',
+                'I think there was an error in banning my account.',
+                'My account seems to have been restricted accidentally.',
+                'I believe the ban on my account was a mistake.',
+                'My account may have been suspended due to an oversight.',
+                'I suspect an error led to my account’s ban.',
+                'It seems my account was banned without proper cause.',
+                'I think my account was flagged inadvertently.',
+                'My account appears to have been banned in error.'
+            ];
+            const explanations = [
+                'I have always adhered to WhatsApp’s Terms of Service.',
+                'I have used WhatsApp responsibly and within your guidelines.',
+                'My usage has been compliant with WhatsApp’s policies.',
+                'I have followed all WhatsApp rules and guidelines.',
+                'My account activities align with your Terms of Service.',
+                'I have used WhatsApp solely for personal communication.',
+                'My account has been used in accordance with your policies.',
+                'I have respected all WhatsApp community standards.',
+                'My usage of WhatsApp has been lawful and appropriate.',
+                'I have not violated any of WhatsApp’s usage policies.',
+                'I have maintained compliance with WhatsApp’s terms.',
+                'My account has been used ethically and per your rules.'
+            ];
+            const additionalDetails = [
+                'I rely on WhatsApp for important personal and professional communication.',
+                'This account is critical for staying in touch with family and friends.',
+                'I use WhatsApp to manage daily communications and would appreciate a swift resolution.',
+                'My account is essential for my work and personal connections.',
+                'I depend on WhatsApp for secure and reliable messaging.',
+                'This ban has caused significant inconvenience to my daily communication.',
+                'I use WhatsApp to connect with loved ones across the globe.',
+                'Restoring my account would greatly help me resume normal communication.',
+                'I value WhatsApp’s services and wish to continue using them.',
+                'My account is vital for coordinating with my community and colleagues.',
+                'WhatsApp is my primary tool for staying connected with my network.',
+                'I need my account to communicate with clients and colleagues daily.'
+            ];
+            const requests = [
+                'Please review my account and restore access at your earliest convenience.',
+                'Kindly reconsider the ban and reinstate my account.',
+                'I request a review of my account to lift the ban.',
+                'Please investigate and unban my account as soon as possible.',
+                'I kindly ask for a review to restore my WhatsApp account.',
+                'Please examine my account and lift the suspension promptly.',
+                'I urge you to review my case and restore my account access.',
+                'Kindly look into this matter and unban my account.',
+                'Please conduct a review and reinstate my account access.',
+                'I respectfully request the unbanning of my account.',
+                'Please verify my account status and lift the ban.',
+                'I kindly request a prompt review to restore my account.'
+            ];
+            const closings = [
+                'Thank you for your time and assistance.',
+                'I appreciate your prompt attention to this matter.',
+                'Thank you for reviewing my appeal.',
+                'I’m grateful for your help in resolving this issue.',
+                'Thank you for your support and understanding.',
+                'I look forward to your positive response.',
+                'Thank you for addressing this matter promptly.',
+                'I appreciate your time and consideration.',
+                'Thank you for your efforts in resolving this.',
+                'I’m thankful for your assistance in this matter.',
+                'Thank you for your kind attention to my appeal.',
+                'I appreciate your help in restoring my account.'
+            ];
+
+            // Generate 1000 unique messages
+            generatedMessages = [];
+            for (let i = 0; i < 1000; i++) {
+                const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+                const reason = reasons[Math.floor(Math.random() * reasons.length)];
+                const explanation = explanations[Math.floor(Math.random() * explanations.length)];
+                const detail = additionalDetails[Math.floor(Math.random() * additionalDetails.length)];
+                const request = requests[Math.floor(Math.random() * requests.length)];
+                const closing = closings[Math.floor(Math.random() * closings.length)];
+                const message = `${greeting}\n\nI am writing to appeal the ban on my WhatsApp account associated with the phone number ${phoneNumber}. ${reason} ${explanation} ${detail} ${request}\n\n${closing}\n\nSincerely,\n[Your Name]`;
+                generatedMessages.push(`Appeal ${i + 1}:\n${message}\n\n---\n`);
+
+                // Update progress bar
+                if (i % 100 === 0) {
+                    progressFill.style.width = `${(i / 1000) * 100}%`;
+                }
+            }
+
+            // Complete progress bar
+            progressFill.style.width = '100%';
+            setTimeout(() => progressBar.classList.add('hidden'), 1000);
+
+            // Show success message and continue button
+            formMessage.textContent = `1000 appeal messages generated! Click Continue to open Gmail with batch ${batchNumber}.`;
+            formMessage.classList.remove('hidden', 'text-red-600');
+            formMessage.classList.add('text-green-600');
+            continueSection.classList.remove('hidden');
+
+            // Reset form
+            document.getElementById('appealForm').reset();
+        }
+
+        function openGmail() {
+            const batchSize = 5;
+            const maxBatches = Math.ceil(generatedMessages.length / batchSize);
+            if (selectedBatch < 1 || selectedBatch > maxBatches) {
+                document.getElementById('formMessage').textContent = `Invalid batch number. Please generate again with a number between 1 and ${maxBatches}.`;
+                document.getElementById('formMessage').classList.remove('text-green-600');
+                document.getElementById('formMessage').classList.add('text-red-600');
+                return;
+            }
+
+            const start = (selectedBatch - 1) * batchSize;
+            const selectedMessages = generatedMessages.slice(start, start + batchSize).join('\n');
+            const emailBody = encodeURIComponent(selectedMessages);
+            const subject = encodeURIComponent(`Appeal for WhatsApp Account Unban (Batch ${selectedBatch})`);
+            
+            // Open Gmail (or default email client) with pre-filled email
+            window.location.href = `mailto:support@whatsapp.com?subject=${subject}&body=${emailBody}`;
+        }
+    </script>
+</body>
+  </html>
